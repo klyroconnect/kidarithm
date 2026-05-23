@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Kidarithm — the math battle game where students duel, race, and grow. Buy once for TZS 280,000 (~$108 USD) and use it forever, fully offline." />
+  <meta property="og:title" content="Kidarithm — Math Battle for Kids" />
+  <meta property="og:description" content="Challenge a friend, beat the AI, or train solo. Buy once — use forever. TZS 280,000 (~$108 USD), fully offline for life." />
+  <meta property="og:url" content="https://klyroconnect.github.io/kidarithm/" />
+  <title>Kidarithm — Math Battle for Kids</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --yellow: #FFD23F;
+      --yellow-dark: #E6A800;
+      --orange: #FF6B35;
+      --orange-dark: #CC5520;
+      --blue: #1A91D1;
+      --blue-light: #E8F4FC;
+      --purple: #7B5EA7;
+      --purple-light: #F0EBF8;
+      --green: #2ECC71;
+      --green-light: #E8F8EF;
+      --red: #E74C3C;
+      --bg: #FFFBF2;
+      --surface: #FFFFFF;
+      --text: #1A1A2E;
+      --text-muted: #5A5A7A;
+      --border: #E8E0D0;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 2px solid var(--border);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 64px;
+    }
+    .nav-logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--orange);
+      letter-spacing: 0.5px;
+      text-decoration: none;
+    }
+    .nav-logo span { color: var(--blue); }
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      background: var(--orange);
+      color: #fff !important;
+      padding: 0.45rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 700 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--orange-dark) !important; color: #fff !important; }
+    .hamburger { display: none; cursor: pointer; background: none; border: none; font-size: 1.6rem; color: var(--text); }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 90vh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding: 5rem 2rem 4rem;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #FFF8E1 0%, #FFF0E8 40%, #EEF6FF 100%);
+      z-index: 0;
+    }
+    .hero-dots {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(var(--border) 1.5px, transparent 1.5px);
+      background-size: 28px 28px;
+      z-index: 0;
+      opacity: 0.6;
+    }
+    .hero-inner {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: var(--yellow);
+      color: #7A5500;
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 0.3rem 1rem;
+      border-radius: 30px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 1.2rem;
+    }
+    h1 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.2;
+      color: var(--text);
+      margin-bottom: 1.2rem;
+    }
+    h1 .accent { color: var(--orange); }
+    h1 .accent2 { color: var(--blue); }
+    .hero-sub {
+      font-size: 1.15rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+      max-width: 480px;
+    }
+    .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.8rem 1.8rem;
+      border-radius: 50px;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: transform 0.15s, box-shadow 0.15s;
+      cursor: pointer;
+      border: none;
+    }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 4px 0 var(--orange-dark);
+    }
+    .btn-primary:hover { box-shadow: 0 6px 0 var(--orange-dark); }
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 2px solid var(--border);
+      box-shadow: 0 4px 0 var(--border);
+    }
+    .btn-secondary:hover { box-shadow: 0 6px 0 var(--border); }
+
+    /* Hero visual */
+    .hero-visual {
+      display: flex;
+      justify-content: center;
+    }
+    .game-mockup {
+      background: var(--surface);
+      border-radius: 24px;
+      border: 3px solid var(--border);
+      box-shadow: 8px 8px 0 var(--border);
+      padding: 1.5rem;
+      max-width: 380px;
+      width: 100%;
+    }
+    .mockup-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.2rem;
+    }
+    .mockup-title {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--orange);
+    }
+    .mockup-badge-vs {
+      background: var(--orange);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+    }
+    .players-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 0.5rem;
+      align-items: center;
+      margin-bottom: 1.2rem;
+    }
+    .player-card {
+      background: var(--blue-light);
+      border-radius: 12px;
+      padding: 0.8rem;
+      text-align: center;
+    }
+    .player-card.p2 { background: var(--purple-light); }
+    .player-avatar {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 0.3rem;
+    }
+    .player-name { font-weight: 700; font-size: 0.85rem; color: var(--text); }
+    .player-score {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--blue);
+    }
+    .player-card.p2 .player-score { color: var(--purple); }
+    .vs-label {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .question-box {
+      background: var(--bg);
+      border-radius: 12px;
+      border: 2px solid var(--border);
+      padding: 1rem;
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+    .question-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.3rem; }
+    .question-text {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .numpad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.4rem;
+    }
+    .key {
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      cursor: default;
+    }
+    .key.enter { background: var(--green); color: #fff; border-color: var(--green); }
+
+    /* ── TRUST BAR ── */
+    .trust-bar {
+      background: var(--text);
+      color: #fff;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .trust-icon { font-size: 1.2rem; }
+
+    /* ── SECTIONS ── */
+    section { padding: 5rem 2rem; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 0.25rem 0.8rem;
+      border-radius: 20px;
+      margin-bottom: 0.8rem;
+    }
+    h2 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 700;
+      margin-bottom: 0.8rem;
+      line-height: 1.25;
+    }
+    .section-lead {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      max-width: 560px;
+      margin-bottom: 3rem;
+    }
+
+    /* ── MODES ── */
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .mode-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 2px solid var(--border);
+      padding: 1.8rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .mode-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 5px;
+    }
+    .mode-card.blue::before { background: var(--blue); }
+    .mode-card.orange::before { background: var(--orange); }
+    .mode-card.purple::before { background: var(--purple); }
+    .mode-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+    .mode-emoji { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .mode-card h3 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+    .mode-card p { font-size: 0.95rem; color: var(--text-muted); }
+    .mode-tag {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.2rem 0.7rem;
+      border-radius: 20px;
+    }
+    .tag-blue { background: var(--blue-light); color: #0D5A85; }
+    .tag-orange { background: #FFF0E8; color: #CC5520; }
+    .tag-purple { background: var(--purple-light); color: #4A3066; }
+
+    /* ── FEATURES ── */
+    .features-bg { background: #F7F4FF; }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+    }
+    .feature-item {
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      padding: 1.4rem;
+    }
+    .feature-icon {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .fi-yellow { background: #FFF8D6; }
+    .fi-blue { background: var(--blue-light); }
+    .fi-green { background: var(--green-light); }
+    .fi-orange { background: #FFF0E8; }
+    .fi-purple { background: var(--purple-light); }
+    .fi-red { background: #FDECEA; }
+    .feature-item h4 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 0.3rem;
+      color: var(--text);
+    }
+    .feature-item p { font-size: 0.88rem; color: var(--text-muted); }
+
+    /* ── DIFFICULTY ── */
+    .difficulty-section { background: var(--surface); }
+    .levels-row {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+    }
+    .level-pill {
+      padding: 0.5rem 1.2rem;
+      border-radius: 30px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      border: 2px solid transparent;
+    }
+    .lp-1 { background: #E8F8EF; color: #1A7A45; border-color: #A8E0BF; }
+    .lp-2 { background: #FFF8D6; color: #7A5500; border-color: #FFD23F; }
+    .lp-3 { background: #FFF0E8; color: #CC5520; border-color: #FFAA80; }
+    .lp-4 { background: var(--blue-light); color: #0D5A85; border-color: #90CCF0; }
+    .lp-5 { background: var(--purple-light); color: #4A3066; border-color: #C0A0E0; }
+    .lp-6 { background: #FFF0F5; color: #99003C; border-color: #FFB0CC; }
+    .difficulty-desc { font-size: 1rem; color: var(--text-muted); max-width: 600px; }
+
+    /* ── FOR WHO ── */
+    .audience-bg { background: var(--bg); }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+    .audience-card {
+      border-radius: var(--radius);
+      padding: 1.8rem;
+      border: 2px solid var(--border);
+      background: var(--surface);
+    }
+    .audience-card .aud-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+    .audience-card h3 {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+    .audience-card p { font-size: 0.9rem; color: var(--text-muted); }
+
+    /* ── ANIMATIONS ── */
+    .anims-section { background: #FFF8F0; }
+    .anims-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .anim-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 50px;
+      padding: 0.6rem 1.2rem;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    /* ── DOWNLOAD ── */
+    .download-section {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--purple) 100%);
+      color: #fff;
+      text-align: center;
+    }
+    .download-section h2 { color: #fff; }
+    .download-section .section-lead { color: rgba(255,255,255,0.8); max-width: 540px; margin-left: auto; margin-right: auto; }
+    .requirements {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin: 2rem 0;
+    }
+    .req-chip {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 30px;
+      padding: 0.4rem 1rem;
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--yellow);
+      color: #7A5500;
+      padding: 1rem 2.2rem;
+      border-radius: 50px;
+      font-weight: 700;
+      font-size: 1.05rem;
+      text-decoration: none;
+      box-shadow: 0 5px 0 var(--yellow-dark);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    .download-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 var(--yellow-dark); }
+    .source-link {
+      display: inline-block;
+      margin-top: 1.2rem;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--text);
+      color: rgba(255,255,255,0.7);
+      text-align: center;
+      padding: 2.5rem 2rem;
+      font-size: 0.9rem;
+    }
+    footer a { color: var(--yellow); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+    .footer-logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #fff;
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    .hero-visual .game-mockup { animation: float 4s ease-in-out infinite; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-content > * {
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-content > *:nth-child(1) { animation-delay: 0.1s; }
+    .hero-content > *:nth-child(2) { animation-delay: 0.2s; }
+    .hero-content > *:nth-child(3) { animation-delay: 0.3s; }
+    .hero-content > *:nth-child(4) { animation-delay: 0.4s; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hamburger { display: block; }
+      .nav-links.open {
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        top: 64px;
+        left: 0; right: 0;
+        background: var(--surface);
+        border-bottom: 2px solid var(--border);
+        padding: 1rem 2rem;
+        gap: 1rem;
+      }
+      .hero-inner { grid-template-columns: 1fr; text-align: center; }
+      .hero-sub { margin-left: auto; margin-right: auto; }
+      .btn-group { justify-content: center; }
+      .hero-visual { display: none; }
+      .trust-bar { gap: 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav role="navigation" aria-label="Main navigation">
+  <a href="#" class="nav-logo">Kid<span>arithm</span></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="#modes">Game Modes</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#who">Who It's For</a></li>
+    <li><a href="#pricing" class="nav-cta">Buy Now — TZS 280,000</a></li>
+  </ul>
+  <button class="hamburger" aria-label="Toggle menu" onclick="document.getElementById('nav-links').classList.toggle('open')">☰</button>
+</nav>
+
+<!-- HERO -->
+<header class="hero" role="banner">
+  <div class="hero-bg" aria-hidden="true"></div>
+  <div class="hero-dots" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-content">
+      <span class="hero-badge">🎮 Math Battle Game — Buy Once, Use Forever</span>
+      <h1>
+        Make math a<br />
+        <span class="accent">battle</span> they <span class="accent2">love</span>.
+      </h1>
+      <p class="hero-sub">
+        Kidarithm turns arithmetic practice into head-to-head duels, AI showdowns, and solo challenges — with animations, sound effects, and real progress tracking. Pay once. Yours forever.
+      </p>
+      <div class="btn-group">
+        <a href="#pricing" class="btn btn-primary">💳 Buy Now — TZS 280,000</a>
+        <a href="#modes" class="btn btn-secondary">See How It Works</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="game-mockup">
+        <div class="mockup-header">
+          <span class="mockup-title">🏆 Kidarithm</span>
+          <span class="mockup-badge-vs">2-PLAYER MODE</span>
+        </div>
+        <div class="players-row">
+          <div class="player-card">
+            <span class="player-avatar">🧒</span>
+            <div class="player-name">Amina</div>
+            <div class="player-score">7</div>
+          </div>
+          <div class="vs-label">VS</div>
+          <div class="player-card p2">
+            <span class="player-avatar">👦</span>
+            <div class="player-name">Juma</div>
+            <div class="player-score">5</div>
+          </div>
+        </div>
+        <div class="question-box">
+          <div class="question-label">Answer fast!</div>
+          <div class="question-text">48 ÷ 6 = ?</div>
+        </div>
+        <div class="numpad">
+          <div class="key">7</div><div class="key">8</div><div class="key">9</div>
+          <div class="key">4</div><div class="key">5</div><div class="key">6</div>
+          <div class="key">1</div><div class="key">2</div><div class="key">3</div>
+          <div class="key">⌫</div><div class="key">0</div><div class="key enter">✓</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- TRUST BAR -->
+<div class="trust-bar" role="complementary" aria-label="Key facts">
+  <div class="trust-item"><span class="trust-icon">🌍</span> Works Offline — For Life</div>
+  <div class="trust-item"><span class="trust-icon">💳</span> One-Time Payment — No Subscriptions</div>
+  <div class="trust-item"><span class="trust-icon">🖥️</span> Windows Desktop App</div>
+  <div class="trust-item"><span class="trust-icon">👨‍👩‍👧</span> Safe for Ages 5+</div>
+</div>
+
+<!-- GAME MODES -->
+<section id="modes" aria-labelledby="modes-heading">
+  <div class="section-inner">
+    <span class="section-tag" style="background:#FFF0E8; color:#CC5520;">How to Play</span>
+    <h2 id="modes-heading">Three ways to battle math</h2>
+    <p class="section-lead">Whether you're competing with a friend or training alone, there's a mode for every moment.</p>
+
+    <div class="modes-grid">
+      <div class="mode-card blue">
+        <span class="mode-emoji">🤜🤛</span>
+        <h3>2-Player Mode</h3>
+        <p>Two players on one keyboard — race to answer first. The faster you are, the more points you earn. Pure friendly rivalry.</p>
+        <span class="mode-tag tag-blue">Head-to-head competition</span>
+      </div>
+      <div class="mode-card orange">
+        <span class="mode-emoji">🤖</span>
+        <h3>1-Player vs AI</h3>
+        <p>Face off against an AI opponent at four levels — Easy, Medium, Hard, and Expert. Can you beat the machine?</p>
+        <span class="mode-tag tag-orange">4 AI difficulty levels</span>
+      </div>
+      <div class="mode-card purple">
+        <span class="mode-emoji">🧘</span>
+        <h3>Me Mode (Solo)</h3>
+        <p>Self-paced challenges with no pressure. Pick your topic, set your difficulty, and just practice — perfect for quiet study time.</p>
+        <span class="mode-tag tag-purple">Personal practice</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFICULTY -->
+<section class="difficulty-section" aria-labelledby="diff-heading">
+  <div class="section-inner">
+    <span class="section-tag" style="background:#E8F8EF; color:#1A7A45;">Difficulty System</span>
+    <h2 id="diff-heading">From Junior to Titan 🏅</h2>
+    <p class="section-lead">Six levels that grow with the child. Small, friendly numbers at the start — large, complex ones at the top.</p>
+    <div class="levels-row" aria-label="Difficulty levels">
+      <span class="level-pill lp-1">🌱 Junior</span>
+      <span class="level-pill lp-2">⭐ Novice</span>
+      <span class="level-pill lp-3">🔥 Skilled</span>
+      <span class="level-pill lp-4">💧 Advanced</span>
+      <span class="level-pill lp-5">⚡ Expert</span>
+      <span class="level-pill lp-6">👑 Titan</span>
+    </div>
+    <p class="difficulty-desc">Each level controls the size of the numbers used in questions. A Junior student works with single digits, while a Titan tackles hundreds and beyond — including decimals and negative numbers.</p>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section id="features" class="features-bg" aria-labelledby="features-heading">
+  <div class="section-inner">
+    <span class="section-tag" style="background:#F0EBF8; color:#4A3066;">Features</span>
+    <h2 id="features-heading">Everything built in, nothing missing</h2>
+    <p class="section-lead">Every feature was designed to make learning feel like a game — not homework.</p>
+
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon fi-blue">➕</div>
+        <h4>All Math Operations</h4>
+        <p>Addition, subtraction, multiplication, division, decimals, and positive/negative numbers.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-yellow">😊</div>
+        <h4>Emoji Visual Mode</h4>
+        <p>For young learners — questions shown as emoji groups for intuitive, visual math understanding.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-orange">⏱️</div>
+        <h4>Countdown Timer</h4>
+        <p>Beat the clock on every question to sharpen mental math speed and build confidence.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-green">📄</div>
+        <h4>PDF Progress Report</h4>
+        <p>After each game, export a full report — score, accuracy, and time — to share with parents or teachers.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-purple">📊</div>
+        <h4>Parental Dashboard</h4>
+        <p>Track your child's progress over time with a dedicated dashboard showing performance trends.</p>
+      </div>
+      <div class="feature-item">
+        <div class="feature-icon fi-red">🔊</div>
+        <h4>Sound Effects & Music</h4>
+        <p>Correct/wrong sound cues, background music, and celebratory sounds that make every session lively.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANIMATIONS -->
+<section class="anims-section" aria-labelledby="anims-heading">
+  <div class="section-inner">
+    <span class="section-tag" style="background:#FFF8E1; color:#7A5500;">Battle Animations</span>
+    <h2 id="anims-heading">Every win looks amazing 🎉</h2>
+    <p class="section-lead">Correct answers trigger satisfying animations that show who is winning — making every point feel earned.</p>
+    <div class="anims-row">
+      <div class="anim-chip">🎈 Balloon Battle</div>
+      <div class="anim-chip">🏗️ Tower Builder</div>
+      <div class="anim-chip">⚖️ Seesaw Showdown</div>
+      <div class="anim-chip">⚽ Penalty Shootout</div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO IT'S FOR -->
+<section id="who" class="audience-bg" aria-labelledby="who-heading">
+  <div class="section-inner">
+    <span class="section-tag" style="background:#E8F4FC; color:#0D5A85;">Who It's For</span>
+    <h2 id="who-heading">Built for everyone in the classroom — and at home</h2>
+    <p class="section-lead">Kidarithm works for any age, any role, and any skill level.</p>
+    <div class="audience-grid">
+      <div class="audience-card">
+        <span class="aud-icon">🧒</span>
+        <h3>Students</h3>
+        <p>Turn daily math practice into something you actually look forward to. Challenge friends, beat scores, and watch yourself improve.</p>
+      </div>
+      <div class="audience-card">
+        <span class="aud-icon">👨‍👩‍👧</span>
+        <h3>Parents</h3>
+        <p>Know exactly where your child stands with progress reports and a dashboard — without any screen time guilt.</p>
+      </div>
+      <div class="audience-card">
+        <span class="aud-icon">👩‍🏫</span>
+        <h3>Teachers</h3>
+        <p>Set up quick classroom competitions or solo practice sessions. Adaptable to any curriculum level.</p>
+      </div>
+      <div class="audience-card">
+        <span class="aud-icon">🏫</span>
+        <h3>Schools</h3>
+        <p>No internet required, no subscriptions, no recurring costs. Buy once, install on any Windows computer and it's ready for everyone — forever.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING + PAYMENT -->
+<section id="pricing" class="download-section" aria-labelledby="pricing-heading">
+  <div class="section-inner">
+    <h2 id="pricing-heading">One price. Yours forever.</h2>
+    <p class="section-lead">Pay once and Kidarithm works fully offline on your computer for life — no subscriptions, no renewals, no internet required.</p>
+
+    <!-- Price display -->
+    <div style="display:inline-block; background:rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.3); border-radius: 20px; padding: 1.5rem 2.5rem; margin: 1.5rem 0 2rem;">
+      <div style="font-size:0.85rem; font-weight:600; opacity:0.7; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.3rem;">One-Time Price</div>
+      <div style="font-family:'Fredoka',sans-serif; font-size:3rem; font-weight:700; color:var(--yellow); line-height:1;">TZS 280,000</div>
+      <div style="font-size:1rem; opacity:0.75; margin-top:0.3rem;">≈ USD 108 &nbsp;·&nbsp; Pay once, use forever</div>
+    </div>
+
+    <div class="requirements" aria-label="System requirements">
+      <span class="req-chip">🖥️ Windows 10 or newer</span>
+      <span class="req-chip">💾 ~50 MB storage</span>
+      <span class="req-chip">🖱️ Mouse + Keyboard</span>
+      <span class="req-chip">🌐 No internet needed after install</span>
+    </div>
+
+    <!-- Payment options -->
+    <div style="margin: 2.5rem auto; max-width: 680px;">
+      <div style="font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; opacity:0.7; margin-bottom:1.2rem;">How to Pay</div>
+      <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; text-align:left;">
+
+        <!-- NMB Bank 1 -->
+        <div style="background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.25); border-radius:16px; padding:1.2rem;">
+          <div style="font-size:1.3rem; margin-bottom:0.5rem;">🏦</div>
+          <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; color:#fff;">NMB Bank (Local)</div>
+          <div style="font-size:0.82rem; opacity:0.75; margin-bottom:0.25rem;">Account No.</div>
+          <div style="font-family:monospace; font-size:1rem; font-weight:700; color:var(--yellow); letter-spacing:1px;">53410014739</div>
+          <div style="font-size:0.82rem; opacity:0.75; margin-top:0.5rem; margin-bottom:0.25rem;">SWIFT Code</div>
+          <div style="font-family:monospace; font-size:0.9rem; font-weight:700; color:var(--yellow);">NMIBTZTZ</div>
+          <div style="font-size:0.78rem; opacity:0.6; margin-top:0.5rem;">For international bank transfers</div>
+        </div>
+
+        <!-- NMB Bank 2 -->
+        <div style="background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.25); border-radius:16px; padding:1.2rem;">
+          <div style="font-size:1.3rem; margin-bottom:0.5rem;">🏦</div>
+          <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; color:#fff;">NMB Bank (Alt)</div>
+          <div style="font-size:0.82rem; opacity:0.75; margin-bottom:0.25rem;">Account No.</div>
+          <div style="font-family:monospace; font-size:1rem; font-weight:700; color:var(--yellow); letter-spacing:1px;">35510006367</div>
+          <div style="font-size:0.78rem; opacity:0.6; margin-top:0.8rem;">National Microfinance Bank, Tanzania</div>
+        </div>
+
+        <!-- M-Pesa -->
+        <div style="background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.25); border-radius:16px; padding:1.2rem;">
+          <div style="font-size:1.3rem; margin-bottom:0.5rem;">📱</div>
+          <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.4rem; color:#fff;">M-Pesa (Mobile)</div>
+          <div style="font-size:0.82rem; opacity:0.75; margin-bottom:0.25rem;">Send to Number</div>
+          <div style="font-family:monospace; font-size:1rem; font-weight:700; color:var(--yellow); letter-spacing:1px;">+255 763 915 562</div>
+          <div style="font-size:0.78rem; opacity:0.6; margin-top:0.5rem;">Vodacom M-Pesa, Tanzania</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- After payment instructions -->
+    <div style="background:rgba(255,255,255,0.1); border:1.5px solid rgba(255,255,255,0.3); border-radius:14px; padding:1.2rem 1.8rem; max-width:560px; margin:0 auto 2rem; text-align:left;">
+      <div style="font-weight:700; font-size:0.95rem; margin-bottom:0.6rem; color:var(--yellow);">✅ After Payment</div>
+      <div style="font-size:0.9rem; opacity:0.85; line-height:1.8;">
+        Send your payment confirmation (screenshot or receipt) to us by email or WhatsApp, and we will send you the Kidarithm installer within 24 hours.
+      </div>
+    </div>
+
+    <a href="mailto:klyro.connect@gmail.com" class="download-btn" aria-label="Contact us to purchase Kidarithm">
+      ✉ Contact Us to Purchase
+    </a>
+
+    <div style="margin-top: 2rem; font-size: 0.9rem; opacity: 0.7;">
+      Questions? Email <a href="mailto:klyro.connect@gmail.com" style="color:var(--yellow);">klyro.connect@gmail.com</a>
+      &nbsp;·&nbsp; WhatsApp <a href="https://wa.me/255763915562" style="color:var(--yellow);" target="_blank" rel="noopener">+255 763 915 562</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <span class="footer-logo">Kidarithm</span>
+  <p>An educational math game by <a href="https://github.com/klyroconnect" target="_blank" rel="noopener">Klyro Connect</a></p>
+  <p style="margin-top: 0.5rem; font-size: 0.82rem;">Made with ❤️ for kids everywhere · Buy once, use forever</p>
+</footer>
+
+</body>
+</html>
